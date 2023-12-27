@@ -212,7 +212,7 @@
         "platform": {
             "name": "jvm",
             "config": {
-                "home": "/Users/nsauro/.sdkman/candidates/java/21.0.1-amzn",
+                "home": "/Users/nsauro/.sdkman/candidates/java/17.0.9-amzn",
                 "options": [
                     "-Duser.dir=/Users/nsauro/workspace/aoc/project"
                 ]
