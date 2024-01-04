@@ -1,114 +1,118 @@
 package y2023
 
 import java.util.PriorityQueue
+import scala.collection.mutable
 import scala.io.Source
 
 object Day17 extends App {
 
-  val data = Source.fromResource("2023/17.data").getLines().toArray.map(_.toArray.map(x => Node(x.asDigit, Int.MaxValue, None, None)))
+  val data = Source.fromResource("2023/17.data").getLines().toArray.map(_.toArray.map(x => x.asDigit))
 
 
-  data.foreach{
-    x => println(x.map(_.cost).mkString(""))
-  }
-  println("------------------")
+  val allVisited = dijktras(0,0)
+ /* val n = allVisited.filter(n => n.r == data.length - 1 && n.c == data.head.length-1).minBy(_.heatLoss)
 
-  val view = data.map{ x =>
-    Array.from(x.map(_.cost.toString))
-  }
+  println(n)*/
 
-  def updateView(r : Int, c: Int) : Unit = {
-    val node = data(r)(c)
-    val str = node.direction.map(_.toString).getOrElse("-")
-    view(r)(c) = str
-    node.previous match{
-      case Some((r1, c1)) => updateView(r1, c1)
-      case None => ()
+
+
+
+  def dijktras(r: Int, c: Int) : mutable.HashSet[String] = {
+
+
+    val visited = mutable.HashSet.empty[String]
+    val inFlight = mutable.HashMap.empty[String, Node]
+    val q = new PriorityQueue[Node]()
+    q.add(Node(r, c, data(r)(c), Direction.East, 0, 10, null))
+    q.add(Node(r, c, data(r)(c), Direction.South, 0, 10, null))
+
+    def update(n : Node) : Unit = {
+      if (!visited.contains(n.id)) {
+        inFlight.get(n.id) match {
+          case Some(x) if x.heatLoss > n.heatLoss => {
+            q.remove(x)
+            q.add(n)
+            inFlight.put(n.id, n)
+          }
+          case None => {
+            q.add(n)
+            inFlight.put(n.id, n)
+          }
+          case _ => {
+            //existing is already smaller
+          }
+        }
+      }
     }
-
-  }
-
-  dijktras(0,0)
-
-  println(data.last.last)
-
-  updateView(data.length - 1, data.head.length -1)
-
-  view.foreach {
-    x => println(x.mkString(""))
-  }
-
-
-
-  def dijktras(r: Int, c: Int) : Unit = {
-
-    val q = new PriorityQueue[NodeInFlight]()
-    data(r)(c) = data(r)(c).copy(heatLoss = 0)
-    q.add(NodeInFlight(r, c, None, 3, None))
 
     while(q.size() != 0){
-      val cur = q.poll()
+      val node = q.poll()
+      visited.add(node.id)
+      inFlight.remove(node.id)
+      if(node.r != data.length -1 || node.c != data.head.length - 1){
 
-      val node = data(cur.r)(cur.c)
-      data(cur.r)(cur.c) = node.copy(direction = cur.direction, previous = cur.prev.map(x => (x.r, x.c)))
-      val newMin = node.heatLoss + node.cost
-      if(cur.canMoveEast && data(cur.r)(cur.c + 1).heatLoss > newMin){
-        q.remove(NodeInFlight(cur.r, cur.c + 1, None, -1, None))
-        data(cur.r)(cur.c + 1) = data(cur.r)(cur.c + 1).copy(heatLoss = newMin)
-        q.add(NodeInFlight(cur.r, cur.c + 1,Some(Direction.East), cur.direction.fold(2)(x => if(x == Direction.East) cur.forwardMovesLeft - 1 else 2), Some(cur)))
-      }
+        if(node.canMoveEast){
+          val c = data(node.r)(node.c + 1)
+          val n = Node(node.r, node.c + 1, c, Direction.East, node.heatLoss + c, if(node.direction == Direction.East) node.forwardMovesLeft - 1 else 9, node)
+          update(n)
+        }
 
-      if (cur.canMoveWest && data(cur.r)(cur.c - 1).heatLoss > newMin) {
-        q.remove(NodeInFlight(cur.r, cur.c - 1, None, -1, None))
-        data(cur.r)(cur.c - 1) = data(cur.r)(cur.c - 1).copy(heatLoss = newMin)
-        q.add(NodeInFlight(cur.r, cur.c - 1, Some(Direction.West), cur.direction.fold(2)(x => if (x == Direction.West) cur.forwardMovesLeft - 1 else 2), Some(cur)))
-      }
+        if(node.canMoveWest){
+          val c = data(node.r)(node.c - 1)
+          val n = Node(node.r, node.c - 1, c, Direction.West, node.heatLoss + c, if(node.direction == Direction.West) node.forwardMovesLeft - 1 else 9, node)
+          update(n)
+        }
 
-      if (cur.canMoveNorth && data(cur.r - 1)(cur.c ).heatLoss > newMin) {
-        q.remove(NodeInFlight(cur.r - 1, cur.c, None, -1, None))
-        data(cur.r - 1)(cur.c ) = data(cur.r - 1)(cur.c).copy(heatLoss = newMin)
-        q.add(NodeInFlight(cur.r - 1, cur.c, Some(Direction.North), cur.direction.fold(2)(x => if (x == Direction.North) cur.forwardMovesLeft - 1 else 2), Some(cur)))
-      }
+        if(node.canMoveNorth){
+          val c = data(node.r - 1)(node.c)
+          val n = Node(node.r - 1, node.c, c, Direction.North, node.heatLoss + c, if(node.direction == Direction.North) node.forwardMovesLeft - 1 else 9, node)
+          update(n)
+        }
 
-      if (cur.canMoveSouth && data(cur.r + 1)(cur.c).heatLoss > newMin) {
-        q.remove(NodeInFlight(cur.r + 1, cur.c, None, -1, None))
-        data(cur.r + 1)(cur.c ) = data(cur.r + 1)(cur.c).copy(heatLoss = newMin)
-        q.add(NodeInFlight(cur.r + 1, cur.c, Some(Direction.South), cur.direction.fold(2)(x => if (x == Direction.South) cur.forwardMovesLeft - 1 else 2), Some(cur)))
+        if(node.canMoveSouth){
+          val c = data(node.r + 1)(node.c)
+          val n = Node(node.r + 1, node.c, c, Direction.South, node.heatLoss + c, if(node.direction == Direction.South) node.forwardMovesLeft - 1 else 9, node)
+          update(n)
+        }
+      }else{
+        println(node)
       }
     }
+    visited
   }
 
-  case class Node(cost: Int, heatLoss: Int, direction: Option[Direction], previous : Option[(Int, Int)])
-
-  case class NodeInFlight(r : Int, c: Int, direction: Option[Direction], forwardMovesLeft : Int, prev: Option[NodeInFlight]) extends Comparable[NodeInFlight]{
 
 
-    def canMoveNorth = r > 0 && direction.forall{x =>
-      val blocked = (x == Direction.North && forwardMovesLeft == 0)
-      x != Direction.South && !blocked
+  case class Node(r : Int, c: Int, cost: Int, direction: Direction, heatLoss: Int, forwardMovesLeft: Int, parent: Node)  extends Comparable[Node]{
+
+    val id = s"$r-$c-$cost-$direction-$forwardMovesLeft"
+    def canMoveNorth = {
+      val blocked = direction == Direction.North && forwardMovesLeft == 0
+      val turnBlocked = direction != Direction.North && forwardMovesLeft > 6
+      r > 0 && !blocked && direction != Direction.South && !turnBlocked
     }
 
-    def canMoveSouth = r < data.length - 1 && direction.forall { x =>
-      val blocked = (x == Direction.South && forwardMovesLeft == 0)
-      x != Direction.North && !blocked
+    def canMoveSouth = {
+      val blocked = direction == Direction.South && forwardMovesLeft == 0
+      val turnBlocked = direction != Direction.South && forwardMovesLeft > 6
+      r < data.length - 1 && !blocked && direction != Direction.North && !turnBlocked
     }
 
-    def canMoveEast = c < data.head.length - 1 && direction.forall { x =>
-      val blocked = (x == Direction.East && forwardMovesLeft == 0)
-      x != Direction.West && !blocked
+    def canMoveEast = {
+
+      val blocked = direction == Direction.East && forwardMovesLeft == 0
+      val turnBlocked = direction != Direction.East && forwardMovesLeft > 6
+      c < data.head.length - 1 && !blocked && direction != Direction.West && !turnBlocked
     }
 
-    def canMoveWest = c > 0 && direction.forall { x =>
-      val blocked = (x == Direction.West && forwardMovesLeft == 0)
-      x != Direction.East && !blocked
+    def canMoveWest = {
+      val blocked = direction == Direction.West && forwardMovesLeft == 0
+      val turnBlocked = direction != Direction.West && forwardMovesLeft > 6
+      c > 0 && !blocked && direction != Direction.East && !turnBlocked
     }
 
-    override def compareTo(o: NodeInFlight): Int = data(r)(c).heatLoss.compareTo(data(o.r)(o.c).heatLoss)
+    override def compareTo(o: Node): Int = heatLoss.compareTo(o.heatLoss)
 
-    override def equals(obj: Any): Boolean = {
-      val n = obj.asInstanceOf[NodeInFlight]
-      r == n.r && c == n.c
-    }
   }
 
   sealed trait Direction
