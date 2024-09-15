@@ -4,12 +4,9 @@ import scala.io.Source
 
 object Day24 extends App {
 
-
   val allInstructions = Source.fromResource("2021/24.data").getLines().toSeq
 
-
   val input = Seq(1L, 4L).iterator
-
 
   val magnitude = 10000000000000L
   val maxModel = 99999999999999L
@@ -23,7 +20,8 @@ object Day24 extends App {
     } else {
       val next = modelGenerator.next()
       println(next)
-      val res = executeProgram(Variables(), allInstructions, Input(next, magnitude))
+      val res =
+        executeProgram(Variables(), allInstructions, Input(next, magnitude))
       println(res)
       val newAcc = if (res.z == 0 && next > acc.model) {
         acc.copy(variables = res, model = next)
@@ -40,9 +38,7 @@ object Day24 extends App {
 
   class ModelGenerator(start: Long, last: Long) extends Iterator[Long] {
 
-
     private var current = last
-
 
     override def hasNext: Boolean = current >= start
 
@@ -78,7 +74,6 @@ object Day24 extends App {
       l.toString.replace('0', '9').toLong
     }
 
-
     private def containsZero(num: Long): Boolean = {
       if (num == 0) {
         false
@@ -92,8 +87,11 @@ object Day24 extends App {
     }
   }
 
-
-  def executeProgram(variables: Variables, instructions: Seq[String], input: Input): Variables = {
+  def executeProgram(
+      variables: Variables,
+      instructions: Seq[String],
+      input: Input
+  ): Variables = {
 
     if (instructions.isEmpty) {
       variables
@@ -114,7 +112,6 @@ object Day24 extends App {
     }
 
   }
-
 
   object Instruction {
 
@@ -146,10 +143,10 @@ object Day24 extends App {
 
     def getValue(str: String): Long = {
       str match {
-        case "w" => w
-        case "y" => y
-        case "x" => x
-        case "z" => z
+        case "w"    => w
+        case "y"    => y
+        case "x"    => x
+        case "z"    => z
         case Num(n) => n.toLong
       }
     }
@@ -197,6 +194,5 @@ object Day24 extends App {
       }
     }
   }
-
 
 }

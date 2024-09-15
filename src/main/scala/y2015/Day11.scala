@@ -1,7 +1,6 @@
 package y2015
 
-object Day11 extends App{
-
+object Day11 extends App {
 
   val charValues = Map(
     'a' -> 1,
@@ -26,49 +25,43 @@ object Day11 extends App{
     'w' -> 20,
     'x' -> 21,
     'y' -> 22,
-    'z' -> 23,
+    'z' -> 23
   )
 
   val intValues: Map[Int, Char] = charValues.map(x => (x._2, x._1))
 
   val allowedValues = charValues.values.toVector.sorted
 
-
   val input = "cqjxxyzz"
 
   val encoded = input.reverse.map(charValues(_))
 
-
   val res = findNextPassword(increment(encoded))
   println(decode(res))
 
-
-
-  def decode(i : Seq[Int]) : String = {
+  def decode(i: Seq[Int]): String = {
     i.reverse.map(intValues(_)).mkString("")
   }
 
-
-
-  def getNextValue(i : Int) : Int = {
+  def getNextValue(i: Int): Int = {
     val next = allowedValues.indexOf(i) + 1
-    if(next == allowedValues.size){
+    if (next == allowedValues.size) {
       allowedValues(0)
-    }else{
+    } else {
       allowedValues(next)
     }
   }
 
-  def increment(pwd : Seq[Int]) : Seq[Int] = {
+  def increment(pwd: Seq[Int]): Seq[Int] = {
 
-    def doTheThing(cur : Seq[Int], updated: Seq[Int]) : Seq[Int] = {
-      if(cur.isEmpty){
+    def doTheThing(cur: Seq[Int], updated: Seq[Int]): Seq[Int] = {
+      if (cur.isEmpty) {
         updated
-      }else{
+      } else {
         val next = getNextValue(cur.head)
-        if(next == 1){
+        if (next == 1) {
           doTheThing(cur.tail, updated :+ next)
-        }else{
+        } else {
           (updated :+ next) ++ cur.tail
         }
       }
@@ -77,22 +70,28 @@ object Day11 extends App{
     doTheThing(pwd, Seq.empty)
   }
 
-  def isValidPassword(pwd : Seq[Int]) : Boolean = {
-    val hasStraight = pwd.sliding(3).exists(x => (x.head - x(1) == 1) && (x(1) - x.last == 1))
-    val hasPairs = pwd.sliding(2).toSeq.distinct.map(_.toSet).filter(_.size == 1).flatten.size > 1
+  def isValidPassword(pwd: Seq[Int]): Boolean = {
+    val hasStraight =
+      pwd.sliding(3).exists(x => (x.head - x(1) == 1) && (x(1) - x.last == 1))
+    val hasPairs = pwd
+      .sliding(2)
+      .toSeq
+      .distinct
+      .map(_.toSet)
+      .filter(_.size == 1)
+      .flatten
+      .size > 1
 
     hasPairs && hasStraight
 
   }
 
-
-  def findNextPassword(pwd : Seq[Int]) : Seq[Int] = {
-    if(isValidPassword(pwd)){
+  def findNextPassword(pwd: Seq[Int]): Seq[Int] = {
+    if (isValidPassword(pwd)) {
       pwd
-    }else{
+    } else {
       findNextPassword(increment(pwd))
     }
   }
-
 
 }

@@ -2,9 +2,7 @@ package y2016
 
 import scala.jdk.CollectionConverters.IteratorHasAsJava
 
-object Day15 extends App{
-
-
+object Day15 extends App {
 
   val testDiscs = Seq(
     new Disc(5, 4),
@@ -19,52 +17,43 @@ object Day15 extends App{
     new Disc(19, 9),
     new Disc(7, 0),
     new Disc(11, 0)
-
   )
 
-  case class Ball(t : Int, pos: Int) {
+  case class Ball(t: Int, pos: Int) {
     def advance = this.copy(pos = pos + 1)
   }
 
-  class Disc(size: Int, curPos : Int) {
+  class Disc(size: Int, curPos: Int) {
     var curValue = curPos
-    def move() : Unit = {
+    def move(): Unit = {
       val n = curValue + 1
-      curValue = if(n == size) 0 else n
+      curValue = if (n == size) 0 else n
 
     }
   }
 
-  val res = findBall(0, Seq(Ball(0,0)), realDiscs)
+  val res = findBall(0, Seq(Ball(0, 0)), realDiscs)
   println(res)
 
-  def findBall(time : Int, balls : Seq[Ball], discs: Seq[Disc]) : Ball = {
-    //when function is invoked, time advances one slot
+  def findBall(time: Int, balls: Seq[Ball], discs: Seq[Disc]): Ball = {
+    // when function is invoked, time advances one slot
     val updatedTime = time + 1
     discs.foreach(_.move())
     val updatedBalls = balls.map(_.advance)
 
-    if(updatedBalls.nonEmpty && updatedBalls.head.pos > discs.size){
+    if (updatedBalls.nonEmpty && updatedBalls.head.pos > discs.size) {
       updatedBalls.head
-    }else{
-      //update discs
+    } else {
+      // update discs
 
-      val remainingBalls = updatedBalls.filter{ x =>
-        //go through discs, find a disc which rejects the ball b/c its location is less < ball loc and its not 0
+      val remainingBalls = updatedBalls.filter { x =>
+        // go through discs, find a disc which rejects the ball b/c its location is less < ball loc and its not 0
         discs(x.pos - 1).curValue == 0
       }
       findBall(updatedTime, remainingBalls :+ Ball(updatedTime, 0), discs)
 
     }
 
-
-
-
-
   }
-
-
-
-
 
 }

@@ -2,7 +2,7 @@ package y2016
 
 import scala.io.Source
 
-object Day8 extends App{
+object Day8 extends App {
 
   val data = Source.fromResource("2016/8.data").getLines().toSeq
 
@@ -10,13 +10,12 @@ object Day8 extends App{
   val RotateCol = raw"""rotate column x=(\d+) by (\d+)""".r
   val RotateRow = raw"""rotate row y=(\d+) by (\d+)""".r
 
-
   val totalRows = 6
   val totalColumns = 50
 
-  val grid = createGrid(totalRows,totalColumns)
+  val grid = createGrid(totalRows, totalColumns)
 
-  data.foreach{
+  data.foreach {
     case Rect(cols, rows) => {
       for {
         r <- 0 until rows.toInt
@@ -28,15 +27,15 @@ object Day8 extends App{
     case RotateCol(col, amount) => {
       val iCol = col.toInt
       val iAmt = amount.toInt
-      val on = (0 until totalRows).collect{
+      val on = (0 until totalRows).collect {
         case r if grid(r)(iCol) => {
-          if(r + iAmt >= totalRows) r + iAmt - totalRows else r + iAmt
+          if (r + iAmt >= totalRows) r + iAmt - totalRows else r + iAmt
         }
       }.toSet
 
       for {
         row <- 0 until totalRows
-      }{
+      } {
         grid(row)(iCol) = on.contains(row)
       }
     }
@@ -57,23 +56,19 @@ object Day8 extends App{
 
   }
 
-
-
-
   printGrid(grid)
 
   println(grid.map(_.count(_ == true)).sum)
 
-  def createGrid(rows: Int, columns: Int) : Array[Array[Boolean]] = {
-    Array.fill(rows){
+  def createGrid(rows: Int, columns: Int): Array[Array[Boolean]] = {
+    Array.fill(rows) {
       Array.fill(columns)(false)
     }
   }
 
-  def printGrid(g : Array[Array[Boolean]]) : Unit = {
-    g.
-      foreach{ x =>
-      val p = x.map( b => if(b) '#' else '.')
+  def printGrid(g: Array[Array[Boolean]]): Unit = {
+    g.foreach { x =>
+      val p = x.map(b => if (b) '#' else '.')
       println(p.mkString(""))
     }
   }

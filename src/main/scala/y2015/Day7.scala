@@ -2,10 +2,9 @@ package y2015
 
 import scala.io.Source
 
-object Day7 extends App{
+object Day7 extends App {
 
   val data = Source.fromResource("2015/7.data").getLines().toSeq
-
 
   val AndParams = raw"""([a-z]+) AND ([a-z]+) -> ([a-z]+)""".r
   val OrParams = raw"""([a-z]+) OR ([a-z]+) -> ([a-z]+)""".r
@@ -18,62 +17,81 @@ object Day7 extends App{
   val StartParams = raw"""(\d+) -> ([a-z]+)""".r
   val CopyParams = raw"""([a-z]+) -> ([a-z]+)""".r
 
-
-  val (initValues, initOperations) = data.foldLeft((Map.empty[String, Int], Map.empty[Seq[String], Seq[Operation]])){
-    case ((vs, ops), str) =>str match {
-      case AndParams(first, second, res) => (vs, addOperation(ops, Seq(first, second), And(first, second, res)))
-      case OrParams(first, second, res) => (vs,  addOperation(ops, Seq(first, second), Or(first, second, res)))
-      case LShiftParams(first, amount, res) => (vs, addOperation(ops, Seq(first), LeftShift(first, amount.toInt, res)))
-      case RShiftParams(first, amount, res) => (vs, addOperation(ops, Seq(first), RightShift(first, amount.toInt, res)))
-      case NotParams(first, res) => (vs, addOperation(ops, Seq(first), Not(first, res)))
-      case And1Params(first, res) => (vs, addOperation(ops, Seq(first), And1(first, res)))
-      case CopyParams(first, res) => (vs, addOperation(ops, Seq(first), Copy(first, res)))
+  val (initValues, initOperations) = data.foldLeft(
+    (Map.empty[String, Int], Map.empty[Seq[String], Seq[Operation]])
+  ) { case ((vs, ops), str) =>
+    str match {
+      case AndParams(first, second, res) =>
+        (vs, addOperation(ops, Seq(first, second), And(first, second, res)))
+      case OrParams(first, second, res) =>
+        (vs, addOperation(ops, Seq(first, second), Or(first, second, res)))
+      case LShiftParams(first, amount, res) =>
+        (vs, addOperation(ops, Seq(first), LeftShift(first, amount.toInt, res)))
+      case RShiftParams(first, amount, res) =>
+        (
+          vs,
+          addOperation(ops, Seq(first), RightShift(first, amount.toInt, res))
+        )
+      case NotParams(first, res) =>
+        (vs, addOperation(ops, Seq(first), Not(first, res)))
+      case And1Params(first, res) =>
+        (vs, addOperation(ops, Seq(first), And1(first, res)))
+      case CopyParams(first, res) =>
+        (vs, addOperation(ops, Seq(first), Copy(first, res)))
       case StartParams(amount, res) => (vs + (res -> amount.toInt), ops)
     }
   }
 
-  def addOperation(ops : Map[Seq[String], Seq[Operation]], key : Seq[String], op : Operation) : Map[Seq[String], Seq[Operation]] = {
+  def addOperation(
+      ops: Map[Seq[String], Seq[Operation]],
+      key: Seq[String],
+      op: Operation
+  ): Map[Seq[String], Seq[Operation]] = {
     val list = ops.getOrElse(key, Seq.empty[Operation])
     ops + (key -> (list :+ op))
   }
 
-
   println(initValues)
 
-  //initOperations.foreach(println)
+  // initOperations.foreach(println)
 
   val result = compute(initOperations, initValues)
 
   println(result.get("a"))
 
-  def compute(operations : Map[Seq[String], Seq[Operation]], knownRegisters : Map[String, Int]) : Map[String, Int] = {
-    if(operations.nonEmpty){
+  def compute(
+      operations: Map[Seq[String], Seq[Operation]],
+      knownRegisters: Map[String, Int]
+  ): Map[String, Int] = {
+    if (operations.nonEmpty) {
       val knownKeys = knownRegisters.keys.toSet
-      val (nextOperations, remainingOperations) = operations.partition(_._1.forall(knownKeys.contains))
-      val updatedMap = nextOperations.values.foldLeft(knownRegisters){case (acc, ops) =>
-        ops.foldLeft(acc){case (acc2, op) => op.execute(acc2)}
+      val (nextOperations, remainingOperations) =
+        operations.partition(_._1.forall(knownKeys.contains))
+      val updatedMap = nextOperations.values.foldLeft(knownRegisters) {
+        case (acc, ops) =>
+          ops.foldLeft(acc) { case (acc2, op) => op.execute(acc2) }
       }
       compute(remainingOperations, updatedMap)
-    }else{
+    } else {
       knownRegisters
     }
   }
 
-
   trait Operation {
 
-    def execute(registers: Map[String, Int]) : Map[String, Int]
+    def execute(registers: Map[String, Int]): Map[String, Int]
 
-    def resultRegister : String
-
+    def resultRegister: String
 
   }
 
+  case class And(
+      firstRegister: String,
+      secondRegister: String,
+      resultRegister: String
+  ) extends Operation {
 
-
-  case class And(firstRegister : String, secondRegister : String, resultRegister : String) extends Operation {
-
-    def execute(registers: Map[String, Int]) : Map[String, Int] = {
+    def execute(registers: Map[String, Int]): Map[String, Int] = {
 
       val first = registers(firstRegister)
       val second = registers(secondRegister)
@@ -83,9 +101,10 @@ object Day7 extends App{
 
   }
 
-  case class And1(firstRegister : String, resultRegister : String) extends Operation {
+  case class And1(firstRegister: String, resultRegister: String)
+      extends Operation {
 
-    def execute(registers: Map[String, Int]) : Map[String, Int] = {
+    def execute(registers: Map[String, Int]): Map[String, Int] = {
 
       val first = registers(firstRegister)
 
@@ -94,9 +113,13 @@ object Day7 extends App{
 
   }
 
-  case class Or(firstRegister : String, secondRegister : String, resultRegister : String) extends Operation {
+  case class Or(
+      firstRegister: String,
+      secondRegister: String,
+      resultRegister: String
+  ) extends Operation {
 
-    def execute(registers: Map[String, Int]) : Map[String, Int] = {
+    def execute(registers: Map[String, Int]): Map[String, Int] = {
 
       val first = registers(firstRegister)
       val second = registers(secondRegister)
@@ -106,9 +129,10 @@ object Day7 extends App{
 
   }
 
-  case class LeftShift(register : String, amount : Int, resultRegister : String) extends Operation {
+  case class LeftShift(register: String, amount: Int, resultRegister: String)
+      extends Operation {
 
-    def execute(registers: Map[String, Int]) : Map[String, Int] = {
+    def execute(registers: Map[String, Int]): Map[String, Int] = {
 
       val first = registers(register)
 
@@ -117,9 +141,10 @@ object Day7 extends App{
 
   }
 
-  case class RightShift(register : String, amount : Int, resultRegister : String) extends Operation {
+  case class RightShift(register: String, amount: Int, resultRegister: String)
+      extends Operation {
 
-    def execute(registers: Map[String, Int]) : Map[String, Int] = {
+    def execute(registers: Map[String, Int]): Map[String, Int] = {
 
       val first = registers(register)
 
@@ -128,11 +153,10 @@ object Day7 extends App{
 
   }
 
-  case class Not(register : String,resultRegister : String) extends Operation {
+  case class Not(register: String, resultRegister: String) extends Operation {
 
-
-    val mask = 0x0000FFFF
-    def execute(registers: Map[String, Int]) : Map[String, Int] = {
+    val mask = 0x0000ffff
+    def execute(registers: Map[String, Int]): Map[String, Int] = {
 
       val first = registers(register)
 
@@ -141,8 +165,8 @@ object Day7 extends App{
 
   }
 
-  case class Copy(register: String, resultRegister : String) extends Operation {
-    def execute(registers: Map[String, Int]) : Map[String, Int] = {
+  case class Copy(register: String, resultRegister: String) extends Operation {
+    def execute(registers: Map[String, Int]): Map[String, Int] = {
 
       val first = registers(register)
 

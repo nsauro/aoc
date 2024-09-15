@@ -3,7 +3,7 @@ package y2022
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
-object Day07 extends App{
+object Day07 extends App {
 
   val data = Source.fromResource("2022/Day07").getLines().toSeq
 
@@ -23,18 +23,17 @@ object Day07 extends App{
 
   println(root.findSmallestDirectoryGreaterThanOrEqual(neededSpace))
 
-
-  def compute(instr: Seq[String], curDir: Dir) : Unit = {
-    if(instr.nonEmpty){
+  def compute(instr: Seq[String], curDir: Dir): Unit = {
+    if (instr.nonEmpty) {
       instr.head match {
         case CdCmd("..") => compute(instr.tail, curDir.parent.get)
-        case CdCmd(dir) => compute(instr.tail, curDir.getDirectory(dir))
-        case LsCmd() => compute(instr.tail, curDir)
-        case DirDesc(name) =>{
+        case CdCmd(dir)  => compute(instr.tail, curDir.getDirectory(dir))
+        case LsCmd()     => compute(instr.tail, curDir)
+        case DirDesc(name) => {
           curDir.contents.addOne(Dir(name, ListBuffer.empty, Some(curDir)))
           compute(instr.tail, curDir)
         }
-        case FileDesc(size, name) =>  {
+        case FileDesc(size, name) => {
           curDir.contents.addOne(File(name, size.toInt))
           compute(instr.tail, curDir)
         }
@@ -43,36 +42,37 @@ object Day07 extends App{
   }
 
   sealed trait Node {
-    def size : Int
+    def size: Int
   }
 
-
-  case class Dir(name : String, contents : ListBuffer[Node], parent: Option[Dir]) extends Node {
+  case class Dir(name: String, contents: ListBuffer[Node], parent: Option[Dir])
+      extends Node {
     def size = contents.map(_.size).sum
 
-    def getDirectory(name : String) = contents.collectFirst{
+    def getDirectory(name: String) = contents.collectFirst {
       case a @ Dir(n, _, _) if n == name => a
     }.get
 
     override def toString: String = s"name: $name"
 
-    def sumDirectoriesSizeLessThan(maxSize : Int) : Int = {
-      val start = if( this.size <= maxSize) size else 0
-      contents.foldLeft(start){
-        case (acc, a : Dir) => (acc + a.sumDirectoriesSizeLessThan(maxSize))
-        case (acc, _) => acc
+    def sumDirectoriesSizeLessThan(maxSize: Int): Int = {
+      val start = if (this.size <= maxSize) size else 0
+      contents.foldLeft(start) {
+        case (acc, a: Dir) => (acc + a.sumDirectoriesSizeLessThan(maxSize))
+        case (acc, _)      => acc
       }
     }
 
-    def findSmallestDirectoryGreaterThanOrEqual(minSize : Int) : Int = {
+    def findSmallestDirectoryGreaterThanOrEqual(minSize: Int): Int = {
       val start = if (this.size >= minSize) size else Integer.MAX_VALUE
       contents.foldLeft(start) {
-        case (acc, a: Dir) => Math.min(acc, a.findSmallestDirectoryGreaterThanOrEqual(minSize))
+        case (acc, a: Dir) =>
+          Math.min(acc, a.findSmallestDirectoryGreaterThanOrEqual(minSize))
         case (acc, _) => acc
       }
     }
   }
 
-  case class File(name : String, size : Int) extends Node
+  case class File(name: String, size: Int) extends Node
 
 }

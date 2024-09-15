@@ -2,7 +2,7 @@ package y2016
 
 import scala.io.Source
 
-object Day21 extends App{
+object Day21 extends App {
 
   val SwapPosition = """swap position (\d+) with position (\d+)""".r
   val SwapLetter = """swap letter ([a-z]) with letter ([a-z])""".r
@@ -12,23 +12,21 @@ object Day21 extends App{
   val Reverse = """reverse positions (\d+) through (\d+)""".r
   val Move = """move position (\d+) to position (\d+)""".r
 
-
   val data = Source.fromResource("2016/21.data").getLines().toSeq
 
   val res = compute("abcdefgh".toCharArray, data)
   println("--------------------------------------------------")
   val reverse = computeReverse("fbgdceah".toCharArray(), data.reverse)
-  //println(compute("abcdefgh".toCharArray, data).mkString(""))
+  // println(compute("abcdefgh".toCharArray, data).mkString(""))
   println(s"res: ${res.mkString}")
   println(s"reverse: ${reverse.mkString}")
 
-
   def compute(str: Array[Char], instructions: Seq[String]): Array[Char] = {
 
-    if(instructions.isEmpty){
+    if (instructions.isEmpty) {
       str
-    }else{
-      println(s"${str.mkString("")} -- next up: -- ${instructions.head}" )
+    } else {
+      println(s"${str.mkString("")} -- next up: -- ${instructions.head}")
       val res = instructions.head match {
         case SwapPosition(from, to) => {
           val fromI = from.toInt
@@ -60,11 +58,11 @@ object Day21 extends App{
         case Move(x, y) => {
           val xi = x.toInt
           val yi = y.toInt
-          if(xi < yi){ //move left
+          if (xi < yi) { // move left
             val sub = str.slice(xi, yi + 1)
             val rotated = rotateLeft(sub, 1)
             replace(str, xi, rotated)
-          }  else {
+          } else {
             val sub = str.slice(yi, xi + 1)
             val rotated = rotateRight(sub, 1)
             replace(str, yi, rotated)
@@ -75,8 +73,10 @@ object Day21 extends App{
     }
   }
 
-
-  def computeReverse(str: Array[Char], instructions: Seq[String]): Array[Char] = {
+  def computeReverse(
+      str: Array[Char],
+      instructions: Seq[String]
+  ): Array[Char] = {
     if (instructions.isEmpty) {
       str
     } else {
@@ -112,7 +112,7 @@ object Day21 extends App{
         case Move(x, y) => {
           val xi = x.toInt
           val yi = y.toInt
-          if (xi < yi) { //move left
+          if (xi < yi) { // move left
             val sub = str.slice(xi, yi + 1)
             val rotated = rotateRight(sub, 1)
             replace(str, xi, rotated)
@@ -127,12 +127,7 @@ object Day21 extends App{
     }
   }
 
-
-
-
-
-
-  def swap(str: Array[Char], x : Int, y: Int) : Array[Char] = {
+  def swap(str: Array[Char], x: Int, y: Int): Array[Char] = {
     val f = str(x)
     val t = str(y)
     str(x) = t
@@ -140,7 +135,7 @@ object Day21 extends App{
     str
   }
 
-  def rotateRight(str: Array[Char], times: Int) : Array[Char] = {
+  def rotateRight(str: Array[Char], times: Int): Array[Char] = {
     val bla = (0 until times).foldLeft(str.reverse) { case (acc, _) =>
       val s = acc.toSeq
       (s.tail :+ s.head).toArray
@@ -148,7 +143,7 @@ object Day21 extends App{
     bla.reverse
   }
 
-  def rotateLeft(str: Array[Char], times: Int) : Array[Char] = {
+  def rotateLeft(str: Array[Char], times: Int): Array[Char] = {
     val res = (0 until times).foldLeft(str) { case (acc, _) =>
       val s = acc.toSeq
       (s.tail :+ s.head).toArray
@@ -156,13 +151,11 @@ object Day21 extends App{
     res
   }
 
-
-
   def replace(str: Array[Char], i: Int, s: Array[Char]): Array[Char] = {
     if (!s.isEmpty) {
       str(i) = s.head
       replace(str, i + 1, s.tail)
-    }else{
+    } else {
       str
     }
   }
@@ -175,13 +168,12 @@ object Day21 extends App{
 
   def unrotate(str: Array[Char], letter: Char): Array[Char] = {
 
-
-    def doIt(s : Array[Char]) : Array[Char] = {
+    def doIt(s: Array[Char]): Array[Char] = {
       val toLeft = rotateLeft(s, 1)
       val res = rotateFrom(toLeft.toSeq.toArray, letter)
-      if(str.sameElements(res)){
+      if (str.sameElements(res)) {
         toLeft
-      }else{
+      } else {
         doIt(toLeft)
       }
     }

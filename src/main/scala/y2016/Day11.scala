@@ -4,7 +4,6 @@ import scala.collection.mutable.ListBuffer
 
 object Day11 extends App {
 
-
   /*val starting = Seq(
     Lab(
       0,
@@ -24,8 +23,24 @@ object Day11 extends App {
       0,
       Vector(
         Floor(Set(Generator("Promethium")), Set(Microchip("Promethium"))),
-        Floor(Set(Generator("Cobalt"), Generator("Curium"), Generator("Ruthium"), Generator("Plutonium")), Set.empty),
-        Floor(Set.empty, Set(Microchip("Cobalt"), Microchip("Curium"), Microchip("Ruthium"), Microchip("Plutonium"))),
+        Floor(
+          Set(
+            Generator("Cobalt"),
+            Generator("Curium"),
+            Generator("Ruthium"),
+            Generator("Plutonium")
+          ),
+          Set.empty
+        ),
+        Floor(
+          Set.empty,
+          Set(
+            Microchip("Cobalt"),
+            Microchip("Curium"),
+            Microchip("Ruthium"),
+            Microchip("Plutonium")
+          )
+        ),
         Floor(Set.empty, Set.empty)
       )
     )
@@ -34,11 +49,11 @@ object Day11 extends App {
   val winner = exec(starting, Set(starting.hashCode()))
   println(s"winner: $winner")
 
-  def exec(labs: Seq[Lab], seen : Set[Int]) : Int = {
+  def exec(labs: Seq[Lab], seen: Set[Int]): Int = {
 
     val withoutBad = labs.filter(_.isValid)
     println(s"${withoutBad.size} -- ${seen.size}")
-    withoutBad.find(_.isDone) match{
+    withoutBad.find(_.isDone) match {
       case Some(winner) =>
         println(winner)
         winner.moves
@@ -52,17 +67,19 @@ object Day11 extends App {
 
   }
 
-
-  case class Lab( elevator: Int, moves: Int, floors: Vector[Floor]) {
+  case class Lab(elevator: Int, moves: Int, floors: Vector[Floor]) {
     override def toString: String = {
       s"""
-        |E: $elevator
-        |Moves: $moves
-        |${floors.zipWithIndex.map{case(f, i) =>s"$i: $f"}.reverse.mkString("\n")}
-        |""".stripMargin
+         |E: $elevator
+         |Moves: $moves
+         |${floors.zipWithIndex
+          .map { case (f, i) => s"$i: $f" }
+          .reverse
+          .mkString("\n")}
+         |""".stripMargin
     }
 
-    def isValid : Boolean = {
+    def isValid: Boolean = {
       floors.forall(_.isValid)
     }
     def isDone: Boolean = floors.init.forall(_.isEmpty)
@@ -71,10 +88,11 @@ object Day11 extends App {
       val f = floors(elevator)
       val validFloors = getValidFloors
 
-      val chips : Set[Set[Component]] = f.chips.map(Set(_))
-      val generators : Set[Set[Component]] = f.generators.map(Set(_))
-      val x: Set[Set[Component]] = (f.chips ++ f.generators).toSeq.combinations(2).map(_.toSet).toSet
-      val pairs  = chips ++ generators ++ x
+      val chips: Set[Set[Component]] = f.chips.map(Set(_))
+      val generators: Set[Set[Component]] = f.generators.map(Set(_))
+      val x: Set[Set[Component]] =
+        (f.chips ++ f.generators).toSeq.combinations(2).map(_.toSet).toSet
+      val pairs = chips ++ generators ++ x
       val combos = for {
         floor <- validFloors
         pair <- pairs
@@ -82,35 +100,36 @@ object Day11 extends App {
       } yield {
         (floor, pair)
       }
-      val b = combos.foldLeft(ListBuffer.empty[Lab]){ case (acc, x) =>
-        val l = Lab(x._1,
+      val b = combos.foldLeft(ListBuffer.empty[Lab]) { case (acc, x) =>
+        val l = Lab(
+          x._1,
           moves + 1,
-          floors.zipWithIndex.map{case(f, i) =>
-            if(i == x._1){
+          floors.zipWithIndex.map { case (f, i) =>
+            if (i == x._1) {
               f.add(x._2)
-            }else if(i == elevator) {
+            } else if (i == elevator) {
               f.remove(x._2)
-            }else{
+            } else {
               f
             }
           }
         )
         acc.addOne(l)
-        }
+      }
       b
     }
 
-    def getValidFloors : Seq[Int] = {
+    def getValidFloors: Seq[Int] = {
       val above = elevator + 1
       val below = elevator - 1
       val allEmptyUnderneath = (0 to below).forall(floors(_).isEmpty)
-      Seq(above, below).filter{ x =>
+      Seq(above, below).filter { x =>
         x >= 0 && x <= 3 && !(allEmptyUnderneath && x < elevator)
       }
     }
   }
 
-  trait Component extends Product with Serializable{
+  trait Component extends Product with Serializable {
     def element: String
   }
 
@@ -120,33 +139,35 @@ object Day11 extends App {
       generators.mkString(" ") + " " + chips.mkString(" ")
     }
 
-    lazy val isValid : Boolean = {
-      generators.isEmpty || chips.forall(x => generators.exists(_.element == x.element))
+    lazy val isValid: Boolean = {
+      generators.isEmpty || chips.forall(x =>
+        generators.exists(_.element == x.element)
+      )
     }
 
-    def add(comps : Set[Component]) = {
-      val (newG, newC) = comps.foldLeft((generators, chips)){ case((gs, cs), i) =>
-        i match{
-        case g : Generator => (gs + g, cs)
-        case c : Microchip => (gs, cs + c )
-      }
+    def add(comps: Set[Component]) = {
+      val (newG, newC) = comps.foldLeft((generators, chips)) {
+        case ((gs, cs), i) =>
+          i match {
+            case g: Generator => (gs + g, cs)
+            case c: Microchip => (gs, cs + c)
+          }
       }
       Floor(newG, newC)
     }
 
-    def remove(comps :Set[Component]) = {
-      val (newG, newC) = comps.foldLeft((generators, chips)){ case((gs, cs), i) =>
-        i match {
-          case g : Generator => (gs - g, cs)
-          case c : Microchip => (gs, cs - c )
-        }
+    def remove(comps: Set[Component]) = {
+      val (newG, newC) = comps.foldLeft((generators, chips)) {
+        case ((gs, cs), i) =>
+          i match {
+            case g: Generator => (gs - g, cs)
+            case c: Microchip => (gs, cs - c)
+          }
       }
       Floor(newG, newC)
     }
 
     lazy val isEmpty = generators.isEmpty && chips.isEmpty
-
-
 
   }
   case class Generator(element: String) extends Component {

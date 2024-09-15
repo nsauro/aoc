@@ -6,10 +6,9 @@ object Day20 extends App {
 
   val data = Source.fromResource("2021/20.data").getLines()
 
-
   val alg = data.next().toCharArray
 
-  data.next() //skip blank
+  data.next() // skip blank
 
   val image: Vector[Vector[Char]] = Vector.from(data.toSeq.map(_.toVector))
 
@@ -22,10 +21,12 @@ object Day20 extends App {
 
   printGrid(enhanced1x)
 
+  def enhance(
+      input: Vector[Vector[Char]],
+      timesExecuted: Int
+  ): Vector[Vector[Char]] = {
 
-  def enhance(input: Vector[Vector[Char]], timesExecuted: Int): Vector[Vector[Char]] = {
-
-    //printGrid(input)
+    // printGrid(input)
     val expansionChar = if (timesExecuted % 2 == 0) '.' else '#'
 
     if (timesExecuted == maxTimes) {
@@ -34,7 +35,7 @@ object Day20 extends App {
 
       val expanded = grow(input, expansionChar)
       // println("-------EXPANDED--------")
-      //printGrid(expanded)
+      // printGrid(expanded)
       val res = expanded.zipWithIndex.map { case (row, r) =>
         row.zipWithIndex.map { case (_, c) =>
           alg(getAlgIndex(expanded, r, c, expansionChar))
@@ -51,12 +52,16 @@ object Day20 extends App {
     val newRow = char.toString.padTo(newRowSize, char).toVector
     newRow +: paddedCols :+ newRow
 
-
   }
 
   def mapToBinary(c: Char): Char = if (c == '.') '0' else '1'
 
-  def lookupValue(image: Vector[Vector[Char]], r: Int, c: Int, char: Char): Char = {
+  def lookupValue(
+      image: Vector[Vector[Char]],
+      r: Int,
+      c: Int,
+      char: Char
+  ): Char = {
 
     if (r < 0 || r >= image.size || c < 0 || c >= image.head.length) {
       mapToBinary(char)
@@ -68,27 +73,26 @@ object Day20 extends App {
   def getAlgIndex(image: Vector[Vector[Char]], r: Int, c: Int, char: Char) = {
 
     val thing: Array[Char] = Array(
-      lookupValue(image, r - 1, c - 1, char), //top left
-      lookupValue(image, r - 1, c, char), //top
-      lookupValue(image, r - 1, c + 1, char), //top right
-      lookupValue(image, r, c - 1, char), //left
-      lookupValue(image, r, c, char), //middle
-      lookupValue(image, r, c + 1, char), //right
-      lookupValue(image, r + 1, c - 1, char), //bottom left
-      lookupValue(image, r + 1, c, char), //bottom
-      lookupValue(image, r + 1, c + 1, char), //bottom right
+      lookupValue(image, r - 1, c - 1, char), // top left
+      lookupValue(image, r - 1, c, char), // top
+      lookupValue(image, r - 1, c + 1, char), // top right
+      lookupValue(image, r, c - 1, char), // left
+      lookupValue(image, r, c, char), // middle
+      lookupValue(image, r, c + 1, char), // right
+      lookupValue(image, r + 1, c - 1, char), // bottom left
+      lookupValue(image, r + 1, c, char), // bottom
+      lookupValue(image, r + 1, c + 1, char) // bottom right
     )
 
     Integer.parseInt(new String(thing), 2)
 
-
   }
-
 
   def printGrid(input: Vector[Vector[Char]]): Unit = {
-    println(s"-----------${input.size}  x ${input.head.size} ---------------------")
+    println(
+      s"-----------${input.size}  x ${input.head.size} ---------------------"
+    )
     input.foreach(x => println(x.mkString("")))
   }
-
 
 }

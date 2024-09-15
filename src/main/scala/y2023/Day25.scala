@@ -7,26 +7,28 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 
-object Day25 extends App{
+object Day25 extends App {
 
   val data = Source.fromResource("2023/25.data").getLines().toSeq
 
-  val graph = new DefaultUndirectedGraph[String, DefaultEdge](classOf[DefaultEdge])
+  val graph =
+    new DefaultUndirectedGraph[String, DefaultEdge](classOf[DefaultEdge])
 
   val nodes = mutable.HashMap.empty[String, Node]
 
-  data.foreach{ entry =>
+  data.foreach { entry =>
     val ids = entry.split(":")
     val source = ids.head.trim
-    val connections = ids.last.split(" ").collect{
+    val connections = ids.last.split(" ").collect {
       case s if s != "" => s.trim
     }
-    if(!graph.containsVertex(source)){
+    if (!graph.containsVertex(source)) {
       graph.addVertex(source)
     }
-    val sourceNode = nodes.getOrElseUpdate(source, Node(source, ListBuffer.empty))
+    val sourceNode =
+      nodes.getOrElseUpdate(source, Node(source, ListBuffer.empty))
     connections.foreach { id =>
-      if(!graph.containsVertex(id)) {
+      if (!graph.containsVertex(id)) {
         graph.addVertex(id)
       }
       graph.addEdge(source, id)
@@ -42,15 +44,13 @@ object Day25 extends App{
   val otherSide = allSides - oneSide
   println(otherSide * oneSide)
 
-
-
-  case class Node(id : String, connections: ListBuffer[Node]) {
-
+  case class Node(id: String, connections: ListBuffer[Node]) {
 
     override def hashCode(): Int = id.hashCode
 
     override def equals(obj: Any): Boolean = id == obj.asInstanceOf[Node].id
 
-    override def toString: String = s"id: $id -- connections: ${connections.map(_.id).mkString(",")}"
+    override def toString: String =
+      s"id: $id -- connections: ${connections.map(_.id).mkString(",")}"
   }
 }

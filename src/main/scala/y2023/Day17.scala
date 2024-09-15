@@ -6,19 +6,18 @@ import scala.io.Source
 
 object Day17 extends App {
 
-  val data = Source.fromResource("2023/17.data").getLines().toArray.map(_.toArray.map(x => x.asDigit))
+  val data = Source
+    .fromResource("2023/17.data")
+    .getLines()
+    .toArray
+    .map(_.toArray.map(x => x.asDigit))
 
-
-  val allVisited = dijktras(0,0)
- /* val n = allVisited.filter(n => n.r == data.length - 1 && n.c == data.head.length-1).minBy(_.heatLoss)
+  val allVisited = dijktras(0, 0)
+  /* val n = allVisited.filter(n => n.r == data.length - 1 && n.c == data.head.length-1).minBy(_.heatLoss)
 
   println(n)*/
 
-
-
-
-  def dijktras(r: Int, c: Int) : mutable.HashSet[String] = {
-
+  def dijktras(r: Int, c: Int): mutable.HashSet[String] = {
 
     val visited = mutable.HashSet.empty[String]
     val inFlight = mutable.HashMap.empty[String, Node]
@@ -26,7 +25,7 @@ object Day17 extends App {
     q.add(Node(r, c, data(r)(c), Direction.East, 0, 10, null))
     q.add(Node(r, c, data(r)(c), Direction.South, 0, 10, null))
 
-    def update(n : Node) : Unit = {
+    def update(n: Node): Unit = {
       if (!visited.contains(n.id)) {
         inFlight.get(n.id) match {
           case Some(x) if x.heatLoss > n.heatLoss => {
@@ -39,51 +38,93 @@ object Day17 extends App {
             inFlight.put(n.id, n)
           }
           case _ => {
-            //existing is already smaller
+            // existing is already smaller
           }
         }
       }
     }
 
-    while(q.size() != 0){
+    while (q.size() != 0) {
       val node = q.poll()
       visited.add(node.id)
       inFlight.remove(node.id)
-      if(node.r != data.length -1 || node.c != data.head.length - 1){
+      if (node.r != data.length - 1 || node.c != data.head.length - 1) {
 
-        if(node.canMoveEast){
+        if (node.canMoveEast) {
           val c = data(node.r)(node.c + 1)
-          val n = Node(node.r, node.c + 1, c, Direction.East, node.heatLoss + c, if(node.direction == Direction.East) node.forwardMovesLeft - 1 else 9, node)
+          val n = Node(
+            node.r,
+            node.c + 1,
+            c,
+            Direction.East,
+            node.heatLoss + c,
+            if (node.direction == Direction.East) node.forwardMovesLeft - 1
+            else 9,
+            node
+          )
           update(n)
         }
 
-        if(node.canMoveWest){
+        if (node.canMoveWest) {
           val c = data(node.r)(node.c - 1)
-          val n = Node(node.r, node.c - 1, c, Direction.West, node.heatLoss + c, if(node.direction == Direction.West) node.forwardMovesLeft - 1 else 9, node)
+          val n = Node(
+            node.r,
+            node.c - 1,
+            c,
+            Direction.West,
+            node.heatLoss + c,
+            if (node.direction == Direction.West) node.forwardMovesLeft - 1
+            else 9,
+            node
+          )
           update(n)
         }
 
-        if(node.canMoveNorth){
+        if (node.canMoveNorth) {
           val c = data(node.r - 1)(node.c)
-          val n = Node(node.r - 1, node.c, c, Direction.North, node.heatLoss + c, if(node.direction == Direction.North) node.forwardMovesLeft - 1 else 9, node)
+          val n = Node(
+            node.r - 1,
+            node.c,
+            c,
+            Direction.North,
+            node.heatLoss + c,
+            if (node.direction == Direction.North) node.forwardMovesLeft - 1
+            else 9,
+            node
+          )
           update(n)
         }
 
-        if(node.canMoveSouth){
+        if (node.canMoveSouth) {
           val c = data(node.r + 1)(node.c)
-          val n = Node(node.r + 1, node.c, c, Direction.South, node.heatLoss + c, if(node.direction == Direction.South) node.forwardMovesLeft - 1 else 9, node)
+          val n = Node(
+            node.r + 1,
+            node.c,
+            c,
+            Direction.South,
+            node.heatLoss + c,
+            if (node.direction == Direction.South) node.forwardMovesLeft - 1
+            else 9,
+            node
+          )
           update(n)
         }
-      }else{
+      } else {
         println(node)
       }
     }
     visited
   }
 
-
-
-  case class Node(r : Int, c: Int, cost: Int, direction: Direction, heatLoss: Int, forwardMovesLeft: Int, parent: Node)  extends Comparable[Node]{
+  case class Node(
+      r: Int,
+      c: Int,
+      cost: Int,
+      direction: Direction,
+      heatLoss: Int,
+      forwardMovesLeft: Int,
+      parent: Node
+  ) extends Comparable[Node] {
 
     val id = s"$r-$c-$cost-$direction-$forwardMovesLeft"
     def canMoveNorth = {
@@ -126,11 +167,11 @@ object Day17 extends App {
       override def toString: String = "<"
     }
 
-    case object North extends Direction{
+    case object North extends Direction {
       override def toString: String = "^"
     }
 
-    case object South extends Direction{
+    case object South extends Direction {
       override def toString: String = "v"
     }
   }

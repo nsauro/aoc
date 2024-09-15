@@ -1,10 +1,16 @@
 package y2015
 
-object Day14 extends App{
+object Day14 extends App {
 
-  case class Reindeer(kmS : Int, flight: Int, rest : Int, remaining : Int, state : String = "flying", points : Int = 0, totalDistance : Int = 0)
-
-
+  case class Reindeer(
+      kmS: Int,
+      flight: Int,
+      rest: Int,
+      remaining: Int,
+      state: String = "flying",
+      points: Int = 0,
+      totalDistance: Int = 0
+  )
 
   val reindeers = Seq(
     Reindeer(8, 8, 53, 8),
@@ -28,8 +34,8 @@ object Day14 extends App{
 
   println(race2(2503, reindeers))
 
-  def race(totalSeconds : Int, reindeer : Seq[Reindeer]) : Seq[Int] = {
-    reindeer.map{ r =>
+  def race(totalSeconds: Int, reindeer: Seq[Reindeer]): Seq[Int] = {
+    reindeer.map { r =>
       val interval = r.rest + r.flight
       val totalIntervals = totalSeconds / interval
       val traveled = totalIntervals * r.flight * r.kmS
@@ -39,48 +45,48 @@ object Day14 extends App{
     }
   }
 
+  def race2(secondsRemaining: Int, reindeer: Seq[Reindeer]): Int = {
 
-  def race2(secondsRemaining : Int, reindeer : Seq[Reindeer]) : Int = {
-
-    if(secondsRemaining < 0){
+    if (secondsRemaining < 0) {
       reindeer.map(_.points).max
-    }else{
-      val updated = reindeer.map{ x =>
-        val newDistance = if(x.state == "flying"){
+    } else {
+      val updated = reindeer.map { x =>
+        val newDistance = if (x.state == "flying") {
           x.kmS
-        }else{
+        } else {
           0
         }
         val (updatedRemaining, updatedState) =
-          if(x.remaining == 1 && x.state == "flying"){
+          if (x.remaining == 1 && x.state == "flying") {
             (x.rest, "resting")
-          }else if( x.remaining == 1 && x.state == "resting"){
+          } else if (x.remaining == 1 && x.state == "resting") {
             (x.flight, "flying")
-          }else{
+          } else {
             (x.remaining - 1, x.state)
           }
 
-        x.copy(remaining = updatedRemaining, state = updatedState, totalDistance = x.totalDistance + newDistance)
+        x.copy(
+          remaining = updatedRemaining,
+          state = updatedState,
+          totalDistance = x.totalDistance + newDistance
+        )
 
       }
 
       val furthestDistance = updated.sortBy(-_.totalDistance).head.totalDistance
 
-      val updatedPoints = updated.map{ x =>
-        if(x.totalDistance == furthestDistance){
+      val updatedPoints = updated.map { x =>
+        if (x.totalDistance == furthestDistance) {
           x.copy(points = x.points + 1)
-        }else{
+        } else {
           x
         }
       }
-
 
       race2(secondsRemaining - 1, updatedPoints)
 
     }
 
   }
-
-
 
 }

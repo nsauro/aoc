@@ -2,8 +2,7 @@ package y2022
 
 import scala.io.Source
 
-object Day03 extends App{
-
+object Day03 extends App {
 
   val data = Source.fromResource("2022/Day03").getLines()
 
@@ -20,14 +19,16 @@ object Day03 extends App{
 
   println(sum)*/
 
-
-  val sum2 = data.iterator.grouped(3).toSeq.map{ x =>
-    println(x)
-    compute2(x.map(_.toSet))
-  }.sum
+  val sum2 = data.iterator
+    .grouped(3)
+    .toSeq
+    .map { x =>
+      println(x)
+      compute2(x.map(_.toSet))
+    }
+    .sum
 
   println(sum2)
-
 
   val sum = data.map { x =>
     val split = x.splitAt(x.length / 2)
@@ -36,19 +37,22 @@ object Day03 extends App{
 
   println(sum)
 
-  def compute(first: String, second: String) : Int = {
+  def compute(first: String, second: String): Int = {
     val common = first.toSet.intersect(second.toSet)
-    common.map{ x =>
-      val offset = if(x.isLower)lowerAsciiOffset else upperAsciiOffset
+    common.map { x =>
+      val offset = if (x.isLower) lowerAsciiOffset else upperAsciiOffset
       x.toInt - offset
     }.sum
   }
 
-  def compute2(elves : Seq[Set[Char]]) : Int = {
-    elves.reduceLeft(_ intersect _).map{ x =>
-      val offset = if (x.isLower) lowerAsciiOffset else upperAsciiOffset
-      x.toInt - offset
-    }.sum
+  def compute2(elves: Seq[Set[Char]]): Int = {
+    elves
+      .reduceLeft(_ intersect _)
+      .map { x =>
+        val offset = if (x.isLower) lowerAsciiOffset else upperAsciiOffset
+        x.toInt - offset
+      }
+      .sum
   }
 
 }

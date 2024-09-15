@@ -11,20 +11,19 @@ object Day04 extends App {
 
   val count = data.count {
     case Input(fmin, fmax, smin, smax) => {
-isContained2(fmin.toInt, fmax.toInt, smin.toInt, smax.toInt)
+      isContained2(fmin.toInt, fmax.toInt, smin.toInt, smax.toInt)
     }
   }
 
   println(count)
 
-
-  def isContained(fmin : Int, fmax : Int, smin : Int, smax : Int) : Boolean = {
+  def isContained(fmin: Int, fmax: Int, smin: Int, smax: Int): Boolean = {
     (fmin >= smin && fmax <= smax) || (smin >= fmin && smax <= fmax)
 
   }
 
-  def isContained2(fmin : Int, fmax : Int, smin : Int, smax : Int)  = {
-    (fmin.to(fmax).toSet intersect( smin.to(smax)).toSet  ).nonEmpty
+  def isContained2(fmin: Int, fmax: Int, smin: Int, smax: Int) = {
+    (fmin.to(fmax).toSet intersect (smin.to(smax)).toSet).nonEmpty
   }
 
 }

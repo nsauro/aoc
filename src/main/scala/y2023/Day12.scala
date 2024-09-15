@@ -21,23 +21,22 @@ object Day12 extends App {
       val opt = merge(springs.toArray, s.prependedAll(padding))
       matches(opt, counts)
     }
-   // println(s"$springs -- $res")
+    // println(s"$springs -- $res")
     res
   }.sum
-
 
   println(res)
   val cache = mutable.HashMap.empty[(String, Seq[Int]), Long]
 
-  val expanded = data.map{ x =>
+  val expanded = data.map { x =>
     val s = x.split(" ")
     val springs = s.head.trim
     val counts = s.last.split(",").map(_.trim.toInt)
     val expandedSprings = Seq.fill(5)(springs).mkString("?")
     val expandedCounts = counts ++ counts ++ counts ++ counts ++ counts
     val res = part2(expandedSprings, expandedCounts)
-    //println(s"$x - $res")
-    //cache.toSeq.sortBy(_._1._1.length).foreach(println)
+    // println(s"$x - $res")
+    // cache.toSeq.sortBy(_._1._1.length).foreach(println)
     res
 
   }.sum
@@ -73,42 +72,44 @@ object Day12 extends App {
         val next = q.dequeue()
         next match {
           case '1' => '#'
-          case _ => '.'
+          case _   => '.'
         }
       }
       case o => o
     }
   }
 
-
-
-  def part2(s : String, groups: Seq[Int]) : Long = {
+  def part2(s: String, groups: Seq[Int]): Long = {
     val k = (s, groups)
-    if(cache.contains(k)){
+    if (cache.contains(k)) {
       cache(k)
-    }else{
+    } else {
       val res =
-        if(s.isEmpty){ //remaining groups..no chars
-          if(groups.isEmpty) 1L else 0L
-      }else if(groups.isEmpty){  ///fully exhausted
-        if(!s.contains('#')) 1L else 0L
-      }else{
-        s.head match{
-          case '#'  if s.length >= groups.head => {
-            val (m, remaining) = s.splitAt(groups.head)
-            if(m.exists(_ == '.') || (remaining.nonEmpty && remaining.head == '#')){
-              0L
-            }else{
-              part2(remaining.tail, groups.tail)
+        if (s.isEmpty) { // remaining groups..no chars
+          if (groups.isEmpty) 1L else 0L
+        } else if (groups.isEmpty) { /// fully exhausted
+          if (!s.contains('#')) 1L else 0L
+        } else {
+          s.head match {
+            case '#' if s.length >= groups.head => {
+              val (m, remaining) = s.splitAt(groups.head)
+              if (
+                m.exists(
+                  _ == '.'
+                ) || (remaining.nonEmpty && remaining.head == '#')
+              ) {
+                0L
+              } else {
+                part2(remaining.tail, groups.tail)
+              }
             }
+            case '#' => 0
+            case '?' => {
+              part2("." + s.tail, groups) + part2("#" + s.tail, groups)
+            }
+            case '.' => part2(s.tail, groups)
           }
-          case '#' => 0
-          case '?' => {
-            part2("." + s.tail, groups) + part2("#" + s.tail, groups)
-          }
-          case '.' => part2(s.tail, groups)
         }
-      }
       cache.addOne(k, res)
       res
     }
