@@ -89,15 +89,15 @@ object Day12 extends App {
     }else{
       val res =
         if(s.isEmpty){ //remaining groups..no chars
-        if(groups.isEmpty) 1 else 0
+          if(groups.isEmpty) 1L else 0L
       }else if(groups.isEmpty){  ///fully exhausted
-        if(!s.contains('#')) 1 else 0
+        if(!s.contains('#')) 1L else 0L
       }else{
         s.head match{
           case '#'  if s.length >= groups.head => {
             val (m, remaining) = s.splitAt(groups.head)
             if(m.exists(_ == '.') || (remaining.nonEmpty && remaining.head == '#')){
-              0
+              0L
             }else{
               part2(remaining.tail, groups.tail)
             }

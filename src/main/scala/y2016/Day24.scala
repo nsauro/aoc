@@ -4,20 +4,20 @@ import scala.io.Source
 
 object Day24 extends App{
     
-    val data = Source.fromResource("2016/24.data").getLines().toArray.map(_.toArray)
+  val data = Source.fromResource("2016/24.data").getLines().toArray.map(_.toArray)
 
-    val maxPoint = 7
+  val maxPoint = 7
 
-    val points = (for {
-        s <- 0 until maxPoint
-        d <- s+1 to maxPoint
-    } yield {
-       val starting = find(s.toString.head)
-       val dis = bfs(Set.empty, Seq(Node(starting, 0)), d.toString.head)
-        (s"$s$d" -> dis)
-    }).toMap
+  val points = (for {
+      s <- 0 until maxPoint
+      d <- s+1 to maxPoint
+  } yield {
+     val starting = find(s.toString.head)
+     val dis = bfs(Set.empty, Seq(Node(starting, 0)), d.toString.head)
+     (s"$s$d" -> dis)
+  }).toMap
 
-    points.foreach(println)
+  points.foreach(println)
 
 
   val res = (0 to maxPoint).permutations.filter(_.head == 0).map{ x =>
@@ -33,12 +33,12 @@ object Day24 extends App{
 
   println(res2)
 
-    def find(c : Char) = {
-        println(s"finding $c")
-        data.zipWithIndex.collectFirst {
-            case (row, i) if (row.indexOf(c) != -1) => (i, row.indexOf(c))
-        }.get
-    }
+  def find(c : Char) = {
+      println(s"finding $c")
+      data.zipWithIndex.collectFirst {
+          case (row, i) if (row.indexOf(c) != -1) => (i, row.indexOf(c))
+      }.get
+  }
 
 
   case class Node(coords: (Int, Int), dis: Int)
@@ -52,7 +52,7 @@ object Day24 extends App{
       val nextQueue = queue.tail ++ neigbhors.map(Node(_, next.dis + 1))
       bfs(visited + next.coords, nextQueue, target)
     }
-   }
+  }
 
   def getNeighbors(point: (Int, Int), visited: Set[(Int, Int)], queued: Seq[Node]): Seq[(Int, Int)] = {
     val neighbors = Seq(
@@ -63,7 +63,4 @@ object Day24 extends App{
     )
     neighbors.filterNot(x => x._2 < 0 || x._1 < 0 || visited.contains(x) || queued.exists(_.coords == x) || data(x._1)(x._2) == '#')
   }
-
-
-
 }

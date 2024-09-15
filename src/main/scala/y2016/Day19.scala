@@ -1,5 +1,6 @@
 package y2016
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
@@ -18,10 +19,19 @@ object Day19 extends App {
   val list = listBuilder.result()
 
 
-   (1 to elfCount).foldLeft((allElves, list)){case ((m, l), i) => (m.addOne(i -> 1), l.addOne(i))}
+  val treeBuilder = mutable.TreeSet.newBuilder[Int]
+  treeBuilder.sizeHint(elfCount)
+  val tree = treeBuilder.result()
+
+
+
+   (1 to elfCount).foldLeft((allElves, list)){case ((m, l), i) => {
+     tree.addOne(i)
+     (m.addOne(i -> 1), l.addOne(i))
+   }}
 
   //println(compute(list))
-  println(compute2(list, 0))
+  println(compute2(tree, 1))
 
   def compute(l : ListBuffer[Int]) : Int = {
     println(s"computing ${l.size} elements")
@@ -50,7 +60,8 @@ object Day19 extends App {
     }
   }
 
-  def compute2(l: ListBuffer[Int], i : Int) : Int = {
+  @tailrec
+  def compute2(l: mutable.TreeSet[Int], i : Int) : Int = {
 
     if(l.size % 1000 == 0){
       println(l.size)
@@ -60,19 +71,29 @@ object Day19 extends App {
     if(l.size == 1){
       l.head
     }else{
-      val takeFrom = if(i <= l.size / 2){
+      val takeFrom: Long = if(i <= l.size / 2){
         val p = i + Math.floor(l.size.toFloat / 2F)
-        if(p >= l.size) 0 else p
+        if(p >= l.size) 0L else p.toLong
       }else{
         val p = i - Math.ceil(l.size.toFloat / 2F)
-        if(p < 0) l.size -1  else p
+        if(p < 0) l.size -1L  else p.toLong
       }
       val takeFromI = takeFrom.toInt
      // println(s"takeFrom: ${l(takeFromI)}")
     //  allElves(l(i)) = allElves(l(i)) + allElves(l(takeFromI))
 //      allElves(l(takeFromI)) = 0
+      val t0 = System.currentTimeMillis()
+      if (l.size <= 989000) {
+      //  println("removing")
+      }
+      if(!l.contains(takeFromI)){
+        println("miss")
+      }
       l.remove(takeFromI)
-      val newI = if(i + 1 >= l.size) 0 else i + 1
+      if(l.size <= 989000){
+   //     println(s"remove took ${System.currentTimeMillis() - t0}")
+      }
+      val newI =  if(i + 1 >= l.size) 0 else i + 1
       compute2(l, newI)
     }
 

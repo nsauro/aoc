@@ -4,7 +4,7 @@ import scala.io.Source
 
 object Day7 extends App{
 
-  val data = Source.fromResource("2015/6.data").getLines().toSeq
+  val data = Source.fromResource("2015/7.data").getLines().toSeq
 
 
   val AndParams = raw"""([a-z]+) AND ([a-z]+) -> ([a-z]+)""".r
@@ -40,7 +40,7 @@ object Day7 extends App{
 
   println(initValues)
 
-  initOperations.foreach(println)
+  //initOperations.foreach(println)
 
   val result = compute(initOperations, initValues)
 

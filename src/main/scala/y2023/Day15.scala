@@ -46,7 +46,7 @@ object Day15 extends App{
     }
   }
 
- val res2 = m.map{ case (box, list) =>
+  val res2 = m.map{ case (box, list) =>
    if(list.nonEmpty){
      list.zipWithIndex.map{ case (((_, len), i)) =>
        (box + 1) * (i + 1) * (len)
@@ -54,9 +54,9 @@ object Day15 extends App{
    }else{
      0
    }
- }.sum
+  }.sum
 
-println(res2)
+  println(res2)
   def hash(x : String) : Int = {
     x.foldLeft(0) { case (acc, ch) =>
       val a = acc + ch

@@ -1,5 +1,6 @@
 package y2016
 
+import scala.Ordering
 import scala.io.Source
 
 object Day4 extends App{
@@ -24,15 +25,14 @@ object Day4 extends App{
           acc
         }
     }
-    implicit val o = new Ordering[(Char, Int)] {
-      override def compare(x: (Char, Int), y: (Char, Int)): Int = {
-        if(x._2 == y._2){
+
+    given Ordering[(Char, Int)] with
+      override def compare(x: (Char, Int), y: (Char, Int)): Int =
+        if x._2 == y._2 then
           x._1.compare(y._1)
-        }else{
+        else
           y._2.compare(x._2)
-        }
-      }
-    }
+
     val y = x.toSeq.sorted.map(_._1).mkString("")
     y
   }

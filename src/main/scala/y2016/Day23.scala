@@ -6,7 +6,7 @@ import scala.annotation.tailrec
 
 object Day23 extends App{
 
-    val data = Source.fromResource("2016/23.data").getLines().toArray
+  val data = Source.fromResource("2016/23.data").getLines().toArray
 
   val CopyValue = raw"cpy (.+) ([abcd])".r
   val CopyCell = raw"cpy ([abcd]) ([abcd])".r

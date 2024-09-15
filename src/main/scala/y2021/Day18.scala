@@ -31,7 +31,7 @@ object Day18 extends App{
   }
 
   def toBuffer(str : String) : ListBuffer[String] = {
-    ListBuffer(str.toCharArray.map(_.toString) :_*)
+    ListBuffer((str.toCharArray.map(_.toString))*)
   }
 
   def add(first : ListBuffer[String], second: ListBuffer[String]) : ListBuffer[String] = {

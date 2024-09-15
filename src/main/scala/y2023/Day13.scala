@@ -27,8 +27,8 @@ object Day13 extends App {
 
   println(res)
 
- val res2 = data.map{ x =>
-   val(originalIndex, originalC, originalIsRow) = findReflection(x, -1, -1)
+  val res2 = data.map{ x =>
+    val(originalIndex, originalC, originalIsRow) = findReflection(x, -1, -1)
 
     val points = for {
       r <- x.indices
@@ -48,13 +48,13 @@ object Day13 extends App {
         acc
       }
     }
-   val res = if (isRow) {
+    val res = if (isRow) {
      100 * count
-   } else {
-     count
-   }
-   println(res)
-   res
+    } else {
+      count
+    }
+    println(res)
+    res
   }.sum
 
   println(res2)
@@ -77,17 +77,17 @@ object Day13 extends App {
   }
 
   def find(x : ListBuffer[ListBuffer[Char]], ignore: Int) = {
-     object Reflection{
-       def unapply(rowIndex: Int) : Option[(Int, Int)] = {
-         val (top, bottom) = x.splitAt(rowIndex + 1)
-         val reversed = top.reverse
-         if (reversed.zip(bottom).forall(x => x._1 == x._2)) {
-           Some(rowIndex, rowIndex + 1)
-         } else {
-           None
-         }
-       }
-     }
+    object Reflection{
+      def unapply(rowIndex: Int) : Option[(Int, Int)] = {
+        val (top, bottom) = x.splitAt(rowIndex + 1)
+        val reversed = top.reverse
+        if (reversed.zip(bottom).forall(x => x._1 == x._2)) {
+          Some(rowIndex, rowIndex + 1)
+        } else {
+          None
+        }
+      }
+    }
 
     x.indices.filter(i => i < x.length - 1 && i != ignore).collectFirst {
       case Reflection(c) => c
