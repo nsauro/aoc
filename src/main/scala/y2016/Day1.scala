@@ -37,7 +37,7 @@ object Day1 extends App {
           case 270 => move(cur.copy(_1 = cur._1 - iAmt), newHeading, steps.tail)
         }
       }
-      case None => cur
+      case None    => cur
       case Some(_) => ???
     }
 
@@ -77,7 +77,7 @@ object Day1 extends App {
             )
         }
       }
-      case None => cur
+      case None    => cur
       case Some(_) => ???
     }
 

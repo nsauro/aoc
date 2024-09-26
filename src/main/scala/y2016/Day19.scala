@@ -22,10 +22,10 @@ object Day19 extends App {
   treeBuilder.sizeHint(elfCount)
   val tree = treeBuilder.result()
   (1 to elfCount).foldLeft((allElves, list)) {
-  case ((m, l), i) => {
-    tree.addOne(i)
-    (m.addOne(i -> 1), l.addOne(i))
-  }
+    case ((m, l), i) => {
+      tree.addOne(i)
+      (m.addOne(i -> 1), l.addOne(i))
+    }
   }
 
   // println(compute(list))
