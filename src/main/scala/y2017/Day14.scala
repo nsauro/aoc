@@ -61,7 +61,7 @@ object Day14  extends App{
     }
 
   }
-  
+
   def knotHash(input:String): String = {
 
     val h = (0L to 255L).toArray
