@@ -46,8 +46,6 @@ object Day06 extends App:
       data(y)(x) = '#'
       val newCount = if (isLoop(starting._1, starting._2, Set.empty, "UP")) count + 1 else count
       data(y)(x) = '.'
-      if newCount != count then
-        println(s"block put: $x $y")
       val next = nextCoord(x,y)
       part2(next._1, next._2, newCount)
     else

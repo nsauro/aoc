@@ -16,12 +16,12 @@ object Day16 extends App:
   def initialMap() = scala.collection.mutable.LinkedHashMap(
     initial.zipWithIndex.toMap.toSeq*
   )
-  val res = part1(data, initial, initialMap())
+  val res = part1(data, initial)
   println(res.mkString(""))
-  println(part2(0, data, initial, initialMap()).mkString(""))
+  println(part2(0, data, initial, mutable.LinkedHashMap.empty).mkString(""))
 
   @tailrec
-  def part1(ins: Seq[String], values : Array[Char], locations: mutable.LinkedHashMap[Char, Int]) : Array[Char] =
+  def part1(ins: Seq[String], values : Array[Char]) : Array[Char] =
     if ins.isEmpty then
       values
     else
@@ -29,40 +29,35 @@ object Day16 extends App:
         case Spin(amount) => 
           val parts = values.splitAt(values.length - amount.toInt)
           val updatedValues = Array.concat(parts._2, parts._1)
-          val updatedLocations = updateMap(updatedValues, locations)
-          part1(ins.tail, updatedValues, updatedLocations)
+          part1(ins.tail, updatedValues)
         case Exchange(i1, i2) =>
           val temp = values(i1.toInt)
           values(i1.toInt) = values(i2.toInt)
           values(i2.toInt) = temp
-          val updatedLocations = updateMap(values, locations)
-          part1(ins.tail, values, updatedLocations)
+          part1(ins.tail, values)
         case Partner(c1, c2) =>
-          val i1 = locations(c1.head)
-          val i2 = locations(c2.head)
+          val i1 = values.indexOf(c1.head)
+          val i2 = values.indexOf(c2.head)
           values(i2) = c1.head
           values(i1) = c2.head
-          part1(ins.tail, values, updateMap(values, locations))
+          part1(ins.tail, values)
 
 
   @tailrec
-  def part2(times: Int, ins: Seq[String], values : Array[Char], locations: mutable.LinkedHashMap[Char, Int]) : Array[Char] = {
-    //#if times > 10000 && times % 10000 == 0 then
-    println(times)
-
-    if(times == 1_000_000_000) then
+  def part2(times: Int, ins: Seq[String], values : Array[Char], cache: mutable.LinkedHashMap[String, String]) : Array[Char] = {
+    if(times == 1000000000) then
       values
     else
-      val updated = part1(ins, values, locations)
-      val newLocs = updateMap(updated, locations)
-      part2(times + 1, ins, updated, newLocs)
+      val key = values.mkString("")
+      println(key)
+      cache.get(key) match{
+        case Some(x) => part2(times + 1, ins, x.toArray, cache)
+        case None =>
+          val updated = part1(ins, values)
+          cache.put(key, updated.mkString(""))
+          part2(times + 1, ins, updated, cache)
+      }
   }
-
-  def updateMap(values: Array[Char], locations: mutable.LinkedHashMap[Char, Int]) : mutable.LinkedHashMap[Char, Int] =
-    values.zipWithIndex.foreach{ case(c, i) =>
-      locations.put(c, i)
-    }
-    locations
 
 
 
