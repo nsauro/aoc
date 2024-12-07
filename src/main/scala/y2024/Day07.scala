@@ -12,7 +12,9 @@ object Day07 extends App:
   val part1 = compute(false)
   println(part1)
 
+  val now = System.currentTimeMillis()
   val part2 = compute(true)
+  println(System.currentTimeMillis() - now)
   println(part2)
 
   def compute(supportConcat: Boolean) = {
@@ -21,19 +23,22 @@ object Day07 extends App:
       val amount = parts(0).toLong
       val nums = parts(1).trim.split(" ").map(_.toLong)
       val operators = getOperators(nums.length - 1, supportConcat)
-      val validOperators = operators.count { ops =>
+      val validOperators = operators.exists { ops =>
         val it = ops.iterator
         val n = nums.reduce { case (a, b) =>
-          it.next() match {
-            case '+' => a + b
-            case '*' => a * b
-            case '|' => (a.toString + b.toString).toLong
-            case _ => a
-          }
+          if a < amount then
+            it.next() match {
+              case '+' => a + b
+              case '*' => a * b
+              case '|' => (a.toString + b.toString).toLong
+              case _ => a
+            }
+          else
+            a
         }
         n == amount
       }
-      if validOperators > 0 then
+      if validOperators then
         acc + amount
       else
         acc
