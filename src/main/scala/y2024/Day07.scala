@@ -7,7 +7,6 @@ import scala.io.Source
 
 object Day07 extends App:
   val data = Source.fromResource("2024/7.data").getLines().toSeq
-  val operatorCache = mutable.LinkedHashMap.empty[Int, Seq[Seq[Char]]]
 
   val part1 = compute(false)
   println(part1)
@@ -44,7 +43,6 @@ object Day07 extends App:
         acc
     }
   }
-
 
   def getOperators(amount: Int, supportConcat: Boolean) : Iterator[Seq[Char]] = new Iterator[Seq[Char]]:
 

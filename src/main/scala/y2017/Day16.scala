@@ -1,7 +1,6 @@
 package y2017
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 import scala.io.Source
 
 object Day16 extends App:
@@ -12,13 +11,13 @@ object Day16 extends App:
   val Exchange = """x(\d+)/(\d+)""".r
   val Partner = """p([a-z])/([a-z])""".r
 
-  val initial = Array('a', 'b', 'c','d','e','f','g','h','i','j','k','l','m','n','o','p')
+  val initial = Array('a', 'b', 'c','d','e'/*,'f','g','h','i','j','k','l','m','n','o','p'*/)
   def initialMap() = scala.collection.mutable.LinkedHashMap(
     initial.zipWithIndex.toMap.toSeq*
   )
   val res = part1(data, initial)
   println(res.mkString(""))
-  println(part2(0, data, initial, mutable.LinkedHashMap.empty).mkString(""))
+  println(part2(initial, Seq.empty).mkString(""))
 
   @tailrec
   def part1(ins: Seq[String], values : Array[Char]) : Array[Char] =
@@ -44,19 +43,16 @@ object Day16 extends App:
 
 
   @tailrec
-  def part2(times: Int, ins: Seq[String], values : Array[Char], cache: mutable.LinkedHashMap[String, String]) : Array[Char] = {
-    if(times == 1000000000) then
-      values
+  def part2(values : Array[Char], seen: Seq[String]) : String = {
+    val updated = part1(data, values)
+    val s = updated.mkString("")
+    val index = seen.indexOf(s)
+    if index != -1 then
+      val m = 1_000_000_000 % seen.size
+      val i = seen.size - 1 - m
+      seen(i)
     else
-      val key = values.mkString("")
-      println(key)
-      cache.get(key) match{
-        case Some(x) => part2(times + 1, ins, x.toArray, cache)
-        case None =>
-          val updated = part1(ins, values)
-          cache.put(key, updated.mkString(""))
-          part2(times + 1, ins, updated, cache)
-      }
+      part2(updated, seen :+ s)
   }
 
 
