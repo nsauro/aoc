@@ -7,7 +7,7 @@ import scala.collection.mutable.ListBuffer
 object Day11 extends App:
 
   val times = 75
-  val input = "965842 9159 3372473 311 0 6 86213 48"
+  val input = ""
   val data = input.split("\\s+").map(x => (x.toLong, 1L)).toMap
 
   val t0 = System.currentTimeMillis()
