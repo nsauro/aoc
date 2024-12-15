@@ -75,5 +75,5 @@ object Day13 extends App:
     else
       0
   }
-  
+
   case class Machine(ax: Long, ay: Long, bx:Long, by:Long, px:Long, py:Long)
