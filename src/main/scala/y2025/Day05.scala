@@ -24,12 +24,9 @@ object Day05 extends App {
 
   def mergeRanges(ranges: Seq[(Long, Long)], acc: Seq[(Long, Long)]): Seq[(Long, Long)] = {
     if(ranges.isEmpty){
-      println(s"finished: $acc")
       acc
     }else{
-      println(s"merging: ${ranges.head}")
       val (newRange, remaining) = mergeRanges(ranges.head, ranges.tail)
-      println(s"new range: $newRange")
       mergeRanges(remaining, acc :+ newRange)
     }
   }
@@ -39,8 +36,6 @@ object Day05 extends App {
     val (mergeable, notMergeable) = candidates.partition{ x =>
       areMergeable(range, x)
     }
-    println(s"mergeable: $mergeable")
-    println(s"not mergeable: $notMergeable")
     if(mergeable.isEmpty){
       (range, candidates)
     }else{
@@ -59,29 +54,4 @@ object Day05 extends App {
       check._1 >= source._1 && check._2 <= source._2  || //source evenlopes check
       check._1 <= source._2 && check._2 >= source._2
   }
-
-  /*
-  12 18
-
-
-3 4 out
-5 12 in
-5 13 in
-13 14 in
-17 19 in
-18 19 in
-19 20 out
-1 20 in
-
-source, check
-
-check.1 <= source.1 && check.1 >= source.1 && check.1 <= source.2 || //check overlaps source lwr
-check.1 <= source.1 && check.1 >= source.1 && check.2 >= source.2 || //check envelopes source
-check.1 >= source.1 && check.2 <= source.2                        || //check inside source
-check.1 <= source.2 && check.1 >= source.1 && check.2 >= source.2 || overlaps upper
-   */
-
-
-
-
 }
