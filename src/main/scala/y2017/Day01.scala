@@ -5,7 +5,7 @@ import scala.io.Source
 object Day01 extends App:
 
   val data =
-    Source.fromResource("2017/1.data").getLines().toSeq.mkString("").toCharArray
+    Source.fromResource("2017/1-1.data").getLines().toSeq.mkString("").toCharArray
 
   val x: Seq[Array[Char]] =
     data.sliding(2).toSeq ++ Seq(Array(data.last, data.head))

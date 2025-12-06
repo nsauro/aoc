@@ -16,7 +16,7 @@ object Day01 extends App {
     ("nine" -> "9")
   )
 
-  val data = Source.fromResource("2023/1.data").getLines().toSeq
+  val data = Source.fromResource("2023/1-1.data").getLines().toSeq
 
   /*val res = data.map{ x =>
     val digitsOnly = x.filter(_.isDigit)

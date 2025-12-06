@@ -5,7 +5,7 @@ import scala.io.Source
 object Day1 extends App {
 
   val data =
-    Source.fromResource("2016/1.data").getLines().toSeq.mkString.split(", ")
+    Source.fromResource("2016/1-1.data").getLines().toSeq.mkString.split(", ")
 
   val Step = raw"""([RL])(\d+)""".r
 
