@@ -1,40 +1,38 @@
-package everybody.y2024
+/*package everybody.y2024
 
-import scala.io.Source
+import scala.io.Source*/
 
-object Quest02 extends App:
+/*object Quest02 extends App:
 
   val data = Source.fromResource("everybody/2024/2-1.data").getLines().toSeq
   val data2 = Source.fromResource("everybody/2024/2-2.data").getLines().toSeq
 
- // part1(data)
-  part2(data2)
+  println(part1(data))
+  println(part2(data2))
 
-  def part1(data : Seq[String]) : Unit = {
+  def part1(data : Seq[String]) = {
     val words = data.head.substring(6).split(",").map(_.r)
     val inscription = data.last
-    val res = words.map(_.findAllMatchIn(inscription).toSeq.size).sum
-    println(res)
+    words.map(_.findAllMatchIn(inscription).toSeq.size).sum
   }
 
-  def part2(data: Seq[String]): Unit = {
-
-
+  def part2(data: Seq[String]) = {
 
     val words = data.head.substring(6).split(",").map( x =>  s"$x|${x.reverse}".r)
     val inscriptions = data.tail
-    val res = inscriptions.map{ inscription =>
-      println(s"$inscription")
-      val r = words.map(_.findAllMatchIn(inscription).map { x =>
-
-        val r = x.end - x.start
-        println(s"${x.matched} -- ${x.start} -- ${x.end}")
-        r
-      }.sum).sum
+    inscriptions.map{ i =>
+      i.find
+      println(i)
+      for {
+        matches <- words.map(_.findAllMatchIn(i))
+        mtch      <- matches
+        m         <- mtch.
+      }
+      val r = words.flatMap(_.findAllMatchIn(i).map(m => (m.start to m.end).toSet)).length
       println(r)
       r
     }.sum
 
 
-  }
+  }*/
 
